@@ -8,7 +8,7 @@
 
 The following screenshot demonstrates how the TraceID can be observed both in the Web Browser Console on the left and in the backend server logs on the right, as captured from Docker Compose logs.
 
-![TraceID Example](./assets/example_traceid_logs.jpeg)
+![TraceID Example](./assets/example_traceid_logs.jpg)
 
 ## Key Features
 
