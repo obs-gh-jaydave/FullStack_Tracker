@@ -4,6 +4,12 @@
 
 **FullStack Tracer** is a web application designed to provide end-to-end observability using **OpenTelemetry** for backend tracing and **Grafana Faro** for frontend instrumentation. This solution helps monitor user interactions, capture backend logs, track Core Web Vitals, and observe system performance metrics such as CPU and memory usage. This README guides you through setting up the project, sending telemetry data to **Observe**, and configuring the OpenTelemetry Collector to capture and forward data from both the frontend and backend.
 
+## Example: TraceID Visibility in Web Browser and Backend Logs
+
+The following screenshot demonstrates how the TraceID can be observed both in the Web Browser Console on the left and in the backend server logs on the right, as captured from Docker Compose logs.
+
+![TraceID Example](./assets/example_traceid_logs.jpeg)
+
 ## Key Features
 
 1. **End-to-End Tracing**: Seamlessly links frontend and backend traces, enabling complete visibility into user interactions and server processes.
