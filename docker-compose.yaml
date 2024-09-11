@@ -1,0 +1,37 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:4318/v1/traces        
+    networks:
+      - app-network
+
+  collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: ["--config", "/etc/otel-collector-config.yaml"]
+    ports:
+      - "4318:4318"
+      - "4317:4317"  # gRPC port
+    networks:
+      - app-network      
+
+networks:
+  app-network:
+    driver: bridge

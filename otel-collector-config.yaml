@@ -1,0 +1,28 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: "0.0.0.0:4318"
+        cors:
+          allowed_origins:
+            - http://localhost:3000  # Allow requests from your front-end
+          allowed_headers:
+            - "*"
+      grpc:
+        endpoint: "0.0.0.0:4317"
+
+processors:
+  batch:
+
+exporters:
+  otlphttp:
+    endpoint: "https://134414420961.collect.observeinc.com/v2/otel"
+    headers:
+      authorization: "Bearer ds1FnafsRKmkZ0Mg2OaA:z2nHFU1Hd2E72EzvloYbMNf2wTW1Ql9k"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp]
