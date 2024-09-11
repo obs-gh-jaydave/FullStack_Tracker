@@ -168,12 +168,6 @@ The **OpenTelemetry Collector** receives traces via HTTP and gRPC, processes the
 
 5. **Network Activity Monitoring**: Captures and tracks browser network requests to analyze client-side resource consumption.
 
-## Advanced Features
-
-- **Synthetic Testing**: In the future, synthetic testing can be added to simulate different user interactions.
-- **Advanced Sampling**: Sampling can be adjusted to reduce the noise while maintaining data quality.
-- **Custom Metrics**: You can push additional custom system-level metrics (e.g., memory and CPU usage) from the backend.
-
 ## Conclusion
 
 This project demonstrates how to use **OpenTelemetry** and **Grafana Faro** to build an **end-to-end observability solution**. With frontend and backend traces, system metrics, and Core Web Vitals tracking, this setup enables complete visibility into user interactions and backend processing, providing the tools needed to monitor and improve application performance.
