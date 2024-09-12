@@ -2,39 +2,39 @@
 
 ## Introduction
 
-**FullStack Tracer** is a web application designed to provide end-to-end observability using **OpenTelemetry** for backend tracing and **Grafana Faro** for frontend instrumentation. This solution helps monitor user interactions, capture backend logs, track Core Web Vitals, and observe system performance metrics such as CPU and memory usage. This README guides you through setting up the project, sending telemetry data to **Observe**, and configuring the OpenTelemetry Collector to capture and forward data from both the frontend and backend.
+**FullStack Tracer** is a powerful observability solution that integrates **OpenTelemetry** for backend tracing and **Grafana Faro** for frontend instrumentation. This project is designed to send **end-to-end telemetry** to **Observe**, a next-generation observability platform built on Snowflake, enabling seamless tracing, logging, and metrics aggregation for comprehensive monitoring of user experiences and system performance.
 
 ## Example: TraceID Visibility in Web Browser and Backend Logs
 
-The following screenshot demonstrates how the TraceID can be observed both in the Web Browser Console on the left and in the backend server logs on the right, as captured from Docker Compose logs.
+The screenshot below demonstrates how the **TraceID** can be traced in both the **Web Browser Console** (left) and in the **backend server logs** (right) using Docker Compose. This exemplifies how **Observe** can connect data across the frontend and backend to provide deep insights into user interaction and service performance.
 
 ![TraceID Example](./assets/example_traceid_logs.jpg)
 
 ## Key Features
 
-1. **End-to-End Tracing**: Seamlessly links frontend and backend traces, enabling complete visibility into user interactions and server processes.
+1. **End-to-End Tracing with Observe**: Provides complete visibility by linking frontend traces with backend spans, capturing the full user journey from browser interactions to server-side operations, and visualizing it in **Observe**.
    
-2. **Browser Log Aggregation**: Aggregates browser console logs (such as error logs) for querying and analysis.
+2. **Browser Log Aggregation**: Collects and aggregates console logs (such as error logs) from the frontend for querying and analysis in **Observe**.
 
-3. **System Metrics Observation**: Tracks CPU usage, memory consumption, and response status codes for specific services.
+3. **System Metrics Observation**: Tracks system metrics (CPU, memory usage, status codes) for backend services and sends them to **Observe** for monitoring performance over time.
 
-4. **Core Web Vitals (CWV)**: Monitors important browser performance metrics like FID (First Input Delay), LCP (Largest Contentful Paint), and CLS (Cumulative Layout Shift).
+4. **Core Web Vitals (CWV)**: Monitors critical web performance metrics like **FID** (First Input Delay), **LCP** (Largest Contentful Paint), and **CLS** (Cumulative Layout Shift) and reports them to **Observe**.
 
-5. **Network Activity Monitoring**: Observes network requests and tracks which resources are consuming the most bandwidth on the client side.
+5. **Network Activity Monitoring**: Captures and tracks browser-side network requests to analyze client-side resource consumption, enabling the identification of bottlenecks and inefficiencies.
 
 ## Project Structure
 
-- **frontend/**: Contains the React application instrumented with **Grafana Faro**.
+- **frontend/**: Contains the React application instrumented with **Grafana Faro**, sending telemetry to **Observe**.
   
-- **backend/**: Contains the Express.js backend instrumented with **OpenTelemetry**.
+- **backend/**: Contains the Express.js backend instrumented with **OpenTelemetry**, sending trace data to **Observe** via the OpenTelemetry Collector.
 
-- **otel-collector-config.yaml**: Configuration file for the OpenTelemetry Collector to export data to **Observe**.
+- **otel-collector-config.yaml**: Configuration file for the **OpenTelemetry Collector**, which forwards both frontend and backend telemetry to **Observe**.
 
-- **docker-compose.yaml**: Docker Compose setup to orchestrate frontend, backend, and OpenTelemetry Collector services.
+- **docker-compose.yaml**: Docker Compose setup to orchestrate frontend, backend, and OpenTelemetry Collector services, all configured to report to **Observe**.
 
 ## Prerequisites
 
-Ensure you have the following installed:
+Ensure the following are installed:
 - **Docker** and **Docker Compose**
 - **Node.js** and **npm**
 
@@ -58,12 +58,12 @@ cd ../backend
 npm install
 ```
 
-### 3. Update Configuration to Send Telemetry to Observe
+### 3. Configure Telemetry to Send Data to Observe
 
-#### Update OpenTelemetry Collector Configuration
-*NOTE: For the `frontend/src/index.js` you MUST supply a Bearer Token that is type HTTP & for `otel-collector-config.yaml` provide an OTLP Bearer Token*
+#### Update the OpenTelemetry Collector Configuration for Observe
 
-In `otel-collector-config.yaml`, update the **Observe** OTLP endpoint and authentication values:
+In the `otel-collector-config.yaml` file, update the configuration to send traces to your **Observe** account:
+
 ```yaml
 receivers:
   otlp:
@@ -94,10 +94,12 @@ service:
       processors: [batch]
       exporters: [otlphttp]
 ```
-Replace `<OBSERVE_CUSTOMER_ID>` with your **Observe** customer ID and `<OBSERVE_API_TOKEN>` with the API token from **Observe**.
+Replace `<OBSERVE_CUSTOMER_ID>` and `<OBSERVE_API_TOKEN>` with your **Observe** credentials.
 
-#### Update Frontend Configuration
-In `frontend/src/index.js`, update the Grafana Faro configuration to send telemetry to Observe:
+#### Update the Frontend to Send Telemetry to Observe
+
+In the `frontend/src/index.js`, update the **Grafana Faro** configuration to push telemetry data directly to the **Observe** HTTP endpoint:
+
 ```js
 import { initializeFaro, getWebInstrumentations } from '@grafana/faro-web-sdk';
 import { FetchTransport } from '@grafana/faro-web-sdk';
@@ -110,17 +112,17 @@ export const faroInstance = initializeFaro({
   },
   batching: {
     enabled: true,
-    limit: 100,  // Adjust batching as needed
-    interval: 300000,  // Set batching interval to 5 minutes
+    limit: 100,
+    interval: 300000, // 5 minutes
   },
   sessionTracking: {
-    enabled: true,  
+    enabled: true,
   },
   instrumentations: [
     ...getWebInstrumentations({
-      enablePerformanceInstrumentation: false,  // Disable non-essential performance tracking
+      enablePerformanceInstrumentation: false,
     }),
-    new TracingInstrumentation({ propagateTraceContext: true }),  // Enable tracing instrumentation
+    new TracingInstrumentation({ propagateTraceContext: true }),
   ],
   transports: [
     new FetchTransport({
@@ -151,29 +153,21 @@ docker-compose up --build
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
 - **Backend**: [http://localhost:3001](http://localhost:3001/api/data)
 
-## Observability Pipeline
+## Observability with Observe
 
-### Frontend Tracing with Grafana Faro
-The **frontend** captures user interactions, Core Web Vitals, and network activities using **Grafana Faro**. The data is sent to **Observe** using a FetchTransport, and traces are linked using the `traceparent` header.
+### Frontend Telemetry
 
-### Backend Tracing with OpenTelemetry
-The **backend** uses **OpenTelemetry** to automatically instrument incoming HTTP requests. Backend traces are linked to frontend spans using the `traceparent` header, allowing for end-to-end visibility across user interactions and server-side processes.
+The frontend leverages **Grafana Faro** to capture browser interactions and performance metrics. These events, such as button clicks, Core Web Vitals, and network activity, are sent directly to **Observe** using the Faro SDK. **Observe** provides dashboards and tools for querying and visualizing this telemetry, helping you to monitor and optimize the client-side performance of your application.
 
-### OpenTelemetry Collector
-The **OpenTelemetry Collector** receives traces via HTTP and gRPC, processes them (e.g., batching), and exports them to **Observe**.
+### Backend Tracing
 
-## Functional Requirements Addressed
+The backend is instrumented with **OpenTelemetry**, capturing all HTTP requests and server-side processing. The **OpenTelemetry Collector** receives this data and exports it to **Observe**, where you can view traces and logs, helping you monitor your services' performance and identify bottlenecks.
 
-1. **End-to-End User Experience**: This setup links frontend and backend traces to provide full visibility into user interactions and backend processing.
+### System Metrics and Logs
 
-2. **Browser Log Aggregation**: Browser logs (console errors, warnings) are aggregated and sent to Observe for querying.
-
-3. **System Metrics Observation**: System metrics such as CPU usage and memory consumption are captured and sent to Observe.
-
-4. **Core Web Vitals Tracking**: Tracks key web performance metrics (CWV) such as FID, LCP, and CLS to assess browser performance.
-
-5. **Network Activity Monitoring**: Captures and tracks browser network requests to analyze client-side resource consumption.
+With **Observe**, you can go beyond tracing and use the platform to gather and analyze system metrics (CPU, memory) and aggregate logs across your application. This enables a holistic view of your infrastructure's health and performance.
 
 ## Conclusion
 
-This project demonstrates how to use **OpenTelemetry** and **Grafana Faro** to build an **end-to-end observability solution**. With frontend and backend traces, system metrics, and Core Web Vitals tracking, this setup enables complete visibility into user interactions and backend processing, providing the tools needed to monitor and improve application performance.
+**FullStack Tracer** demonstrates how **Observe** can be used to build a complete observability pipeline, linking frontend and backend traces, monitoring system metrics, and capturing browser logs. With this setup, you gain full visibility into both user interactions and server-side operations, helping you to identify and resolve performance issues quickly and efficiently.
+
