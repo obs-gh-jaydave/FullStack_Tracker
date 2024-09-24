@@ -1,5 +1,9 @@
 # FullStack Tracer with OpenTelemetry and Grafana Faro
 
+## Observe Worksheet OPAL
+
+[OPAL broken into different stages for a Worksheet](https://gist.github.com/obs-gh-jaydave/676f27e3c9508402414323aafc55bfb9)
+
 ## Introduction
 
 **FullStack Tracer** is a powerful observability solution that integrates **OpenTelemetry** for backend tracing and **Grafana Faro** for frontend instrumentation. This project is designed to send **end-to-end telemetry** to **Observe**, a next-generation observability platform built on Snowflake, enabling seamless tracing, logging, and metrics aggregation for comprehensive monitoring of user experiences and system performance.
